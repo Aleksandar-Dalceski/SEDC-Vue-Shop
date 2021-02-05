@@ -1,0 +1,83 @@
+<template>
+  <ul id="vue-cart" class="list-group">
+    <h2>Card</h2>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Cart
+      <span class="badge badge-primary badge-pill">{{ cart.length }}</span>
+    </li>
+    <li class="list-group-item" v-for="(product, index) in cart" :key="index">
+      <img :src="product.Image" width="40" height="40"/>
+      <h4>{{ product.Title }}</h4>
+      <button type="button" @click="removeProduct(product.ID)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <span class="price" v-html="price(product.Price, product.quantity)"></span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Total: {{ totalCartVal }}
+      <span class="badge badge-primary badge-pill"
+            v-show="showCheckoutButton"
+            @click="goToCheckout()">Go To Checkout</span>
+    </li>
+  </ul>
+
+</template>
+
+<script>
+export default {
+  name: "Cart",
+  props: {
+    showCheckoutButton: {
+      type: Boolean,
+      default: true
+    }
+  },
+  computed: {
+    cart() {
+      return this.$store.state.cart
+    },
+    totalCartVal() {
+      return this.$store.getters.getTotalCartAmount
+    }
+  },
+  methods: {
+    price(price, qty) {
+      return `<strong>${this.$store.state.currency}</strong> ${price}&nbsp;&nbsp;X&nbsp;&nbsp;${qty}`;
+    },
+    removeProduct(ID) {
+      this.$store.commit('removeFromCart', ID)
+    },
+    goToCheckout() {
+      this.$router.push('/checkout')
+    }
+  }
+}
+</script>
+
+<style scoped>
+li.list-group-item img {
+  float: left;
+  margin-right: 6px;
+}
+
+li.list-group-item h4 {
+  float: left;
+  font-size: 14px;
+  max-width: 55%;
+  transform: translateY(5px);
+}
+
+li.list-group-item span.price {
+  float: right;
+  margin-right: 16px;
+  font-size: 14px;
+}
+
+li.list-group-item button {
+  float: right;
+}
+
+.badge {
+  cursor: pointer;
+}
+</style>
